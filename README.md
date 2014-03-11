@@ -1,4 +1,19 @@
-# Citing REAPER
+# REAPER
+REAPER was originally an acronym describing the system, it has however changes so much from its inception
+that the acronym no longer applies.
+
+REAPER is a clojure library implementing multi-document summarization functions, and it is
+maintained by the University of Lethbridge Natural Language Processing lab. REAPER aims to
+support multiple goals such as general summarization, query-focused summarization, complex question
+answering, etc...  It was originally written as an implementation for a paper submission
+
+The focus of my work, and thus focus of the library is on summarization through submodular maximization,
+though the library is by no means limited to such, and it contains algorithms not typically used for this.
+
+This is my first attempt at maintaining an open source library that I actually expect others use, so
+feedback is encouraged via github issues, but be gentle!
+
+## Citing REAPER
 
 I'm an academic, and as you may know we're always desperately clawing at citations. If you use REAPER for a
 publication please cite me. I have provided BiBTeX below.
@@ -15,20 +30,6 @@ publication please cite me. I have provided BiBTeX below.
 }
 ```
 
-# REAPER
-REAPER was originally an acronym describing the system, it has however changes so much from its inception
-that the acronym no longer applies.
-
-REAPER is a clojure library implementing multi-document summarization functions, and it is
-maintained by the University of Lethbridge Natural Language Processing lab. REAPER aims to
-support multiple goals such as general summarization, query-focused summarization, complex question
-answering, etc...  It was originally written as an implementation for a paper submission
-
-The focus of my work, and thus focus of the library is on summarization through submodular maximization,
-though the library is by no means limited to such, and it contains algorithms not typically used for this.
-
-This is my first attempt at maintaining an open source library that I actually expect others use, so
-feedback is encouraged via github issues, but be gentle!
 
 #Components
 This library breaks the problem down into four major components:
