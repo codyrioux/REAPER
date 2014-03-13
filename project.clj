@@ -16,4 +16,4 @@
                  [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
                  [org.clojure/core.memoize "0.5.6"]]
   :main reaper.experiments.sample 
-  :jvm-opts ["-Xmx12g" "-Xms12g" "-server"])
+  :jvm-opts ["-Xmx2g" "-Xms2g" "-server"])
