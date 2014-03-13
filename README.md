@@ -23,9 +23,58 @@ Include the following in your `project.clj` dependencies:
 
 Now lets create a namespace to perform a very small summarization task.
 
-```experiment.clj
+```clojure
+(ns sample.core
+  (:require [reaper.experiments.core :refer :all]
+            [reaper.algorithms.greedy :refer :all]
+            [reaper.rewards.submodular.rouge :refer [make-rouge-n]])
+  (:gen-class))
+
+(defn -main
+  [length-lim]
+  (let
+    [corpus [(line-seq (java.io.BufferedReader. *in*))]
+     actions (map #(vec [:insert %]) (flatten corpus))
+     sp (partial sp actions (read-string length-lim))
+     reward (make-rouge-n corpus 2)]
+    (println (clojure.string/join "\n"
+                                  (first
+                                    (greedy-knapsack
+                                      [[] [] 0]
+                                      terminal?
+                                      cost
+                                      m
+                                      sp
+                                      reward
+                                      (read-string length-lim)))))))
+```
+
+Now we can simply comple, call the jar file with a length limit and feed the text in (one textual unit per line) on standard input. The computed summary will be printed to standard output.
+Here we feed in the first two paragraphs of the wikipedia article on automatic summarization, providing the EOF marker at the end with CTRL+D. No blank lines please, unless you filter them
+out of your line-seq.
+
+```bash
+lein clean && lein uberjar
+java -jar target/sample-0.1.0-SNAPSHOT-standalone.jar 50
+Automatic summarization is the process of reducing a text document with a computer program in order to create a summary that retains the most important points of the original document.
+As the problem of information overload has grown, and as the quantity of data has increased, so has interest in automatic summarization.
+Technologies that can make a coherent summary take into account variables such as length, writing style and syntax.
+An example of the use of summarization technology is search engines such as Google.
+Document summarization is another.
+Generally, there are two approaches to automatic summarization: extraction and abstraction.
+Extractive methods work by selecting a subset of existing words, phrases, or sentences in the original text to form the summary.
+In contrast, abstractive methods build an internal semantic representation and then use natural language generation techniques to create a summary that is closer to what a human might generate.
+Such a summary might contain words not explicitly present in the original. The state-of-the-art abstractive methods are still quite weak, so most research has focused on extractive methods.
 
 ```
+
+This returns the following summary:
+
+Automatic summarization is the process of reducing a text document with a computer program in order to create a summary that retains the most important points of the original document.
+Technologies that can make a coherent summary take into account variables such as length, writing style and syntax.
+
+You can find the code for this sample in `reaper.experiments.simple.clj` and the code for a more complex example that uses many more components of the system in `reaper.experiments.sample.clj`.
+
 
 ## Citing REAPER
 
@@ -94,18 +143,8 @@ generate disjoint sets for diversity.
 
 These components are tied together in an `experiment` of which you can find a sample implementation
 in the `reaper.experiments.sample` namespace. This is a rough, but not completely accurate reimplementation
-of Lin and Blimes 2011 paper on submodular 
+of Lin and Blimes 2011 paper on summarization through submodular maximization.
 
-## Usage
-See `reaper.experiments.sample.clj` for sample usage constructing an entire experiment. Alternately you can run the
-sample from the command line using the uberjar:
-
-```bash
-java -jar reaper.jar <docs-path> <wordnet-path> <word-limit> <lambda>  
-
-# For example on my machine
-java -jar repaer.jar "dataset/D0745J/" "/usr/share/wordnet/" 250 6 
-```
 
 ## License
 
