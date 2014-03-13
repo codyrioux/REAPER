@@ -39,7 +39,8 @@
 
 (ns reaper.tools.porter-stemmer
   (:require [clojure.java.io :as io]
-            [opennlp.nlp :as nlp]))
+            [opennlp.nlp :as nlp]
+            [reaper.util :refer [tokenizer detokenize]]))
 
 (def step-2-map
   {"ational" "ate",
@@ -218,10 +219,7 @@ return [$` $1], otherwise, return [nil nil]"
         step0 step1-a step1-b step1-c
         step2 step3 step4 step5-a step5-b step5-c)))
 
-(def ^:private stop-words (set (line-seq (io/reader "resources/smart_common_words.txt"))))
-(def ^:private tokenizer  (nlp/make-tokenizer "resources/models/en-token.bin"))
 (defn- stem-sentence [s]  (map stem (map clojure.string/lower-case (tokenizer s))))
-(def ^:private detokenize (nlp/make-detokenizer "resources/models/english-detokenizer.xml"))
 
 (defn corpus->stemmed-corpus
   "Converts a corpus into one with each word stemmed."

@@ -22,7 +22,7 @@
 (def related-synsets wn/related-synsets)
 (def related-words wn/related-words)
 
-(def pos-tagger (nlp/make-pos-tagger "resources/models/en-pos-maxent.bin"))
+(def pos-tagger (nlp/make-pos-tagger (clojure.java.io/resource "models/en-pos-maxent.bin")))
 
 (defn word->synset-lemmas
   [word pointers]
@@ -63,7 +63,7 @@
      tokens (util/tokenizer query)
      pos-tags (into {} (map #(vec [(lower-case (first %)) (second %)])
                            (pos-tagger tokens)))
-     tokens (if remove-stopwords (map lower-case (remove sw/stop-words tokens)) (map lower-case tokens))
+     tokens (if remove-stopwords (map lower-case (remove util/stop-words tokens)) (map lower-case tokens))
      tokens (filter #(some #{(pos-tags %)}
                            (set (keys opennlp-pos-to-wordnet))) tokens)
      words (apply concat (map #(wordnet %

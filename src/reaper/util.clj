@@ -3,7 +3,6 @@
             [opennlp.nlp :as nlp]
             [clojure.string :as str]
             [clojure.set]
-            [reaper.tools.porter-stemmer :as stemmer]
             [clojure.core.async :refer [>! <! <!! chan go-loop go]]))
 
 (defn sink
@@ -114,13 +113,7 @@
   (let [parent (first (filter (partial doc-contains? x) docs))]
     (inc (count (all-before parent x)))))
 
-(def stem stemmer/stem)
-(def stop-words (set (line-seq (clojure.java.io/reader "resources/smart_common_words.txt"))))
-(def tokenizer  (nlp/make-tokenizer "resources/models/en-token.bin"))
+(def stop-words (set (line-seq (clojure.java.io/reader (clojure.java.io/resource "smart_common_words.txt")))))
+(def tokenizer  (nlp/make-tokenizer (clojure.java.io/resource "models/en-token.bin")))
 (defn tokenize-lower [s] (map str/lower-case (tokenizer s)))
-(defn tokenize [s]  (map stem (remove stop-words (map str/lower-case (tokenizer s)))))
-(def detokenize (nlp/make-detokenizer "resources/models/english-detokenizer.xml"))
-
-(defn get-raw-doc [path] (line-seq (clojure.java.io/reader path)))
-(defn get-stemmed-stopped [s] (detokenize (tokenize s)))
-(defn get-actions [raw] (doall (map #(with-meta [:insert (get-stemmed-stopped %)] {:raw %}) raw)))
+(def detokenize (nlp/make-detokenizer (clojure.java.io/resource "models/english-detokenizer.xml")))

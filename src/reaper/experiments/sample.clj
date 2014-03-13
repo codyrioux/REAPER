@@ -1,7 +1,5 @@
 (ns reaper.experiments.sample
-  "Higher order functions designed to implement the experiment.
-   These are intended to be generic enough to be passed to different
-   learners and are intended to be partialed before being used."
+  "A rather complex sample experiment baed on Lin and Bilmes 2011."
   (:require [reaper.experiments.core :refer :all]
             [reaper.corpus :as corpus]
             [reaper.algorithms.greedy :refer [greedy-knapsack]]
@@ -30,7 +28,7 @@
    :sp (fnk [actions length-lim] (partial sp actions length-lim))
    :query (fnk [path wn-path] (query->synset-str wn-path (slurp (str path "/query.txt"))))
    ;; Score Functions
-   :vectorizer (fnk [corpus] (make-tfidf-vectorizer corpus 100 :remove-stopwords true :stem true))
+   :vectorizer (fnk [corpus] (memo/fifo  (make-tfidf-vectorizer corpus 100 :remove-stopwords true :stem true) :fifo/threshold (count (flatten corpus))))
    :sim (fnk [corpus] (memo/fifo (make-tfidf-sim corpus 100 :remove-stopwords true :stem true)
                                  :fifo/threshold (* (count (flatten corpus)) (count (flatten corpus)))))
    :csim (fnk [corpus] (memo/fifo  (make-tfidf-corpus-sim corpus 100 :remove-stopwords true :stem true)

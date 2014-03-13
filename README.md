@@ -13,6 +13,20 @@ though the library is by no means limited to such, and it contains algorithms no
 This is my first attempt at maintaining an open source library that I actually expect others use, so
 feedback is encouraged via github issues, but be gentle!
 
+## Using REAPER
+
+Include the following in your `project.clj` dependencies:
+
+```clojure
+[reaper "0.1.0-SNAPSHOT"]
+```
+
+Now lets create a namespace to perform a very small summarization task.
+
+```experiment.clj
+
+```
+
 ## Citing REAPER
 
 I'm an academic, and as you may know we're always desperately clawing at citations. If you use REAPER for a
