@@ -95,7 +95,7 @@ publication please cite me. I have provided BiBTeX below.
 
 
 #Components
-This library breaks the problem down into four major components:
+This library breaks the problem down into several major components, each of which are detailed in this section.
 
 ## Corpus
 The corpus is implemented as a seq of documents, which are a seq of textual units. In the case of REAPER
