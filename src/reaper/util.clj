@@ -3,7 +3,7 @@
             [opennlp.nlp :as nlp]
             [clojure.string :as str]
             [clojure.set]
-            [clojure.core.async :refer [>! <! <!! chan go-loop go]]))
+            [clojure.core.async :refer [>! <! <!! chan go-loop go to-chan]]))
 
 (defn sink
   "Returns an atom containing a vector. Consumes values from channel
@@ -48,6 +48,26 @@
           max-value (apply max (vals results))
           max-args (map first (filter #(= max-value (second %)) results))]
       (rand-nth max-args))))
+
+(defn pargmax
+  "Returns the item in coll which results in the maximal value for f.
+   Computations are performed in parallel."
+  [f coll]
+  (if (empty? coll) nil
+    (let [input (to-chan coll)
+          output (chan)
+          results (sink output)
+          _ (<!! (parallel
+                   (.availableProcessors (Runtime/getRuntime))
+                   (fn [x]
+                     (vec [x (f x)]))
+                   input
+                   output))
+          results (into {} @results)
+          max-value (apply max (vals results))
+          max-args (map first (filter #(= max-value (second %)) results))]
+      (rand-nth max-args))))
+
 
 (defn argmin
   "Returns the item in coll which results in the minimal value for f."

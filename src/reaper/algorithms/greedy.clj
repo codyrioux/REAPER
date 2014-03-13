@@ -21,7 +21,7 @@
     [state istate
      budget ibudget]
     (let
-      [action (util/argmax
+      [action (util/pargmax
                 #(/ (- (reward (m state %)) (reward state)) (cost %))
                 (filter (fn [action] (>= budget (cost action))) (sp state)))]
       (cond
