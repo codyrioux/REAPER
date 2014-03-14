@@ -2,7 +2,7 @@
   (:require [reaper.rewards.util :refer :all]
             [reaper.util :as util]
             [opennlp.nlp :as nlp]
-            [reaper.tools.porder_stemmer :refer [stem]]
+            [reaper.tools.porter-stemmer :refer [stem]]
             [reaper.tools.wordnet :as wordnet]))
 
 (defn- make-ner-pipeline
