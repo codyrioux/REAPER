@@ -41,7 +41,7 @@
                                          vectorize
                                          (quot (count (flatten corpus)) n)
                                          niters)))
-     qvectorizer (if query (make-tfidf-vectorizer [[query]] (count query) :remove-stopwords true :stem true) nil)
+     qvectorizer (if query (make-tfidf-vectorizer [[query]] (count (util/tokenizer query)) :remove-stopwords true :stem true) nil)
      qvec (if query (qvectorizer query) nil)
      e-to-q (if query (util/normalize-map-weights
                         (zipmap (flatten corpus)
