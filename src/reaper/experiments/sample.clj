@@ -3,7 +3,7 @@
   (:require [reaper.experiments.core :refer :all]
             [reaper.corpus :as corpus]
             [reaper.algorithms.greedy :refer [greedy-knapsack]]
-            [reaper.tools.vectorization :refer [make-tfidf-vectorizer]]
+            [reaper.features.tfidf :refer [make-tfidf-vectorizer]]
             [reaper.tools.wordnet :refer [query->synset-str]]
             [reaper.rewards.tfidf :refer [make-tfidf-sim make-tfidf-corpus-sim make-l1]]
             [reaper.rewards.submodular.sso :refer [make-sso-fn]]

@@ -1,7 +1,7 @@
 (ns reaper.rewards.tfidf
   (:require
     [reaper.util :refer :all]
-    [reaper.tools.vectorization :refer [make-tfidf-vectorizer]]
+    [reaper.features.tfidf :refer [make-tfidf-vectorizer]]
     [clojure.core.async :refer [chan to-chan <!!]]
     [incanter.stats :refer [cosine-similarity]]
     [clojure.core.memoize :as memo]

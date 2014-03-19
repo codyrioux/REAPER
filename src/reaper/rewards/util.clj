@@ -5,7 +5,7 @@
             [reaper.algorithms.kmeans :as km]
             [incanter.stats :as stats]
             [clojure.set :refer [intersection]]
-            [reaper.tools.vectorization :refer [make-tfidf-vectorizer]]))
+            [reaper.features.tfidf :refer [make-tfidf-vectorizer]]))
 
 (defn make-recall-fn
   "Given a set of elements to recall, and an extractor function
