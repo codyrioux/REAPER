@@ -37,3 +37,14 @@
     (< k (length s)) []
     (= (nth s 2) 0) (remove (set (second s)) actions)
     (= (nth s 2) 1) []))
+
+(defn postprocess
+  "A post-processing function for a summary that removes
+   certain undesirable side effects of any preprocessing."
+  [sentences]
+  (map #(->
+          %
+          (clojure.string/replace #" , " ", ")
+          (clojure.string/replace #" 's" "'s")
+          (clojure.string/replace #" \. " ". "))
+       sentences))
