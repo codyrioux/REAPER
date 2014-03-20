@@ -22,7 +22,7 @@ If passed a query seq of tokens it will produce a vector with n elements, and
      w->idx (zipmap top-n-terms (range n))]
     (fn [s]
       (let
-        [s (util/tokenizer s)
+        [s (util/tokenize-lower s)
          s (if remove-stopwords (tokens->stop-words s) s)
          s (if stem (tokens->stemmed-tokens s) s)]
         (reduce #(assoc %1 (w->idx %2) (get tfidf-model %2 0))
