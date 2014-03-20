@@ -4,6 +4,7 @@
   (:require
     [reaper.tools.stop-words :refer [corpus->stop-words]]
     [reaper.tools.porter-stemmer :refer [corpus->stemmed-corpus]]
+    [reaper.tools.ngrams :refer [ngrams]]
     [reaper.util :as util]))
 
 (defn- log [x] (Math/log x))
@@ -45,3 +46,26 @@
                                    (<= (get tfidf-model key2)
                                        (get tfidf-model key1))))
                   tfidf-model))))
+
+(defn corpus->ngram-tfidf-model
+  "Converts the provided corpus into a map of ngram => tf*idf value."
+  [corpus n & {:keys [remove-stopwords
+                    stem]
+             :or {remove-stopwords false
+                  stem false}}]
+  (let
+    [corpus (if remove-stopwords (corpus->stop-words corpus) corpus)
+     corpus (if stem (corpus->stemmed-corpus corpus) corpus)
+     corpus (map (fn [doc] (filter #(not (empty? %)) doc)) corpus)
+     docs (map (fn [doc] (apply concat (map #(partition 2 1 %) (map util/tokenize-lower doc)))) corpus)
+     terms (distinct (apply concat docs))
+     docs (filter #(not (empty? %)) docs)
+     doc-to-max-f (zipmap docs (map #(apply max (map (fn [t] (f t %)) %)) docs))
+     tf-map (apply merge-with + (for [d docs] (zipmap terms (map #(tf doc-to-max-f % d) terms))))
+     idf-map (if (<= 1 (count docs))
+               (zipmap terms (repeat 1))
+               (zipmap terms (map #(idf % docs) terms)))]
+    (zipmap terms (map #(*
+                         (get tf-map %)
+                         (get idf-map %))
+                       terms))))
