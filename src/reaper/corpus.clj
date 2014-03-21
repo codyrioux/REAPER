@@ -5,7 +5,7 @@
    package."
   (:require [opennlp.nlp :as nlp]))
 
-(def ^:private get-sentences (nlp/make-setnence-detector (clojure.java.io/resource "models/en-sent.bin")))
+(def ^:private get-sentences (nlp/make-sentence-detector (clojure.java.io/resource "models/en-sent.bin")))
 
 (defn load-corpus
   "Loads a corpus into a seq of documents, where a document is a seq of
