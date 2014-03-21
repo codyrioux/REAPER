@@ -45,6 +45,8 @@
   (map #(->
           %
           (clojure.string/replace #" , " ", ")
+          (clojure.string/replace #" \?" "?")
           (clojure.string/replace #" 's" "'s")
+          (clojure.string/replace #" n't" "n't")
           (clojure.string/replace #" \. " ". "))
        sentences))
