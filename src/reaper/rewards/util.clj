@@ -21,7 +21,7 @@
 (defn make-corpus-sim-fn
   "Calculates each elemenets similarity
    corpus: A corpus object representing the input set."
-  [corpus]
+  [vectorize]
   (let
     [sim (make-sim-fn vectorize)
      input (to-chan (flatten corpus))
@@ -94,7 +94,6 @@
                                          (* (- 1 beta) (if query (get e-to-q sentence 0) 0))))
                                     (intersection % (set (first s))))))
                   groups)))))
-
 
 
 (defn- average-score
