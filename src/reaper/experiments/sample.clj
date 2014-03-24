@@ -33,8 +33,8 @@
                                  :fifo/threshold (* (count (flatten corpus)) (count (flatten corpus)))))
    :csim (fnk [corpus] (memo/fifo  (make-tfidf-corpus-sim corpus 100 :remove-stopwords true :stem true)
                                   :fifo/threshold (count (flatten corpus))))
-   :diversity (fnk [corpus sim csim vectorizer query]
-                   (rwutil/make-diversity-fn corpus sim csim vectorizer (quot (count (flatten corpus)) 5) :query query))
+   :diversity (fnk [corpus csim vectorizer query]
+                   (rwutil/make-diversity-fn corpus csim vectorizer (quot (count (flatten corpus)) 5) :query query))
    :l1 (fnk [corpus sim csim] (make-l1 corpus sim csim 100))
    :reward(fnk [l1 diversity lambda]
                      (fn [s] (+ (l1 s) (* lambda (diversity s)))))

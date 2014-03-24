@@ -4,8 +4,38 @@
   (:require [reaper.util :as util]
             [reaper.algorithms.kmeans :as km]
             [incanter.stats :as stats]
+            [clojure.core.async :refer [chan to-chan <!!]]
             [clojure.set :refer [intersection]]
             [reaper.features.tfidf :refer [make-tfidf-vectorizer]]))
+
+(defn make-sim-fn
+  "Given a vectorizer representation and a vector similarity function.
+   Returns a pairwise similarity function between two vectors."
+  [vectorize & {:keys [sim]
+                 :or {sim stats/cosine-similarity}}]
+  (fn [s1 s2]
+    (try
+      (sim (vectorize s1) (vectorize s2))
+      (catch Exception e 0.0))))
+
+(defn make-corpus-sim-fn
+  "Calculates each elemenets similarity
+   corpus: A corpus object representing the input set.
+   sim: A pairwise similiarity function (sim x y)"
+  [corpus sim]
+  (let
+    [input (to-chan (flatten corpus))
+     output (chan)
+     results (util/sink output)
+     _ (<!! (util/parallel
+              (.availableProcessors (Runtime/getRuntime))
+              (fn [x]
+                (vec [x (reduce + (map (partial sim x)
+                                       (flatten corpus)))]))
+              input
+              output))
+     cached-sims (into {} @results)]
+    (fn [x] (get cached-sims x 0.0))))
 
 (defn make-recall-fn
   "Given a set of elements to recall, and an extractor function
@@ -26,11 +56,14 @@
    create |elements| / n groups.
    If supplied with optional query and beta keys the diversity fn will be
    query sensitive."
-  [corpus wij csim vectorize n & {:keys
-                                  [distance sim query beta niters]
+  [corpus csim vectorize n & {:keys
+                                  [distance sim query
+                                   beta niters
+                                   vfactory]
                                   :or
                                   {distance stats/euclidean-distance
                                    sim stats/cosine-similarity
+                                   vfactory make-tfidf-vectorizer
                                    query nil
                                    beta 0.5
                                    niters 10}}]
@@ -41,7 +74,10 @@
                                          vectorize
                                          (quot (count (flatten corpus)) n)
                                          niters)))
-     qvectorizer (if query (make-tfidf-vectorizer [[query]] (count (util/tokenizer query)) :remove-stopwords true :stem true) nil)
+     qvectorizer (if query
+                   (vfactory [[query]] (count (util/tokenizer query))
+                             :remove-stopwords true :stem true)
+                   nil)
      qvec (if query (qvectorizer query) nil)
      e-to-q (if query (util/normalize-map-weights
                         (zipmap (flatten corpus)
@@ -66,15 +102,8 @@
   (reduce + (map #(score unit %)
                  (remove #{unit} unit-coll))))
 
-(defn make-tfidf-sim
-  ""
-  [corpus]
-  (let
-    []
-    ))
-
 (defn make-coverage-fn
-  "Given the corpus, and a pairwire scoring function score(x, y) produces
+  "Given the corpus, and a pairwise scoring function score(x, y) produces
    a coverage scoring function. This precomputes corpus similarity for
    performance reasons."
   [corpus score alpha]
