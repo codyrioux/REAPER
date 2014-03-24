@@ -20,11 +20,11 @@
 
 (defn make-corpus-sim-fn
   "Calculates each elemenets similarity
-   corpus: A corpus object representing the input set.
-   sim: A pairwise similiarity function (sim x y)"
-  [corpus sim]
+   corpus: A corpus object representing the input set."
+  [corpus]
   (let
-    [input (to-chan (flatten corpus))
+    [sim (make-sim-fn vectorize)
+     input (to-chan (flatten corpus))
      output (chan)
      results (util/sink output)
      _ (<!! (util/parallel
