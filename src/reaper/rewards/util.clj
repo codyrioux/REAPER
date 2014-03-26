@@ -56,42 +56,27 @@
    create |elements| / n groups.
    If supplied with optional query and beta keys the diversity fn will be
    query sensitive."
-  [corpus csim vectorize n & {:keys
-                                  [distance sim query
-                                   beta niters
-                                   vfactory]
-                                  :or
-                                  {distance stats/euclidean-distance
-                                   sim stats/cosine-similarity
-                                   vfactory make-tfidf-vectorizer
-                                   query nil
-                                   beta 0.5
-                                   niters 10}}]
+  [corpus csim vectorize n & {:keys [distance qsim
+                                     beta niters
+                                     vfactory]
+                              :or
+                              {distance stats/euclidean-distance
+                               qsim nil
+                               beta 0.5
+                               niters 10}}]
   (let
     [groups (filter seq
                     (map set (km/k-means (flatten corpus)
                                          distance
                                          vectorize
                                          (quot (count (flatten corpus)) n)
-                                         niters)))
-     qvectorizer (if query
-                   (vfactory [[query]] (count (util/tokenizer query))
-                             :remove-stopwords true :stem true)
-                   nil)
-     qvec (if query (qvectorizer query) nil)
-     e-to-q (if query (util/normalize-map-weights
-                        (zipmap (flatten corpus)
-                                (map #(try
-                                        (sim qvec (qvectorizer %))
-                                        (catch Exception e 0.0))
-                                     (flatten corpus))))
-              {})]
+                                         niters)))]
     (fn [s]
       (reduce + (map 
                   #(Math/sqrt
                      (reduce + (map (fn [sentence]
                                       (+ (* (/ beta (count (flatten corpus))) (csim sentence))
-                                         (* (- 1 beta) (if query (get e-to-q sentence 0) 0))))
+                                         (* (- 1 beta) (if qsim (qsim sentence) 0.0))))
                                     (intersection % (set (first s))))))
                   groups)))))
 

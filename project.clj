@@ -8,6 +8,7 @@
                  [clojure-opennlp "0.2.2"]
                  [hiccup "1.0.3"]
                  [clj-wordnet "0.0.5"]
+                 [org.clojure/math.combinatorics "0.0.7"]
                  [incanter/incanter-core "1.5.0-SNAPSHOT"]
                  [marcliberatore.mallet-lda "0.1.1"]
                  [criterium "0.4.3"]
