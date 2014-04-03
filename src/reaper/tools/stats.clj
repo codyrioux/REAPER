@@ -16,15 +16,15 @@
   [b c]
   (let [m (i/div (i/plus b c) 2)]
     (* (/ 1 2)
-       (kullback-leibler-divergence b m)
-       (kullback-leibler-divergence c m))))
+       (kl-divergence b m)
+       (kl-divergence c m))))
 
 (defn kl-sim
   "A relevance measure between two vectors."
   [b c]
-  (- 1 (kullback-leibler-divergence b c)))
+  (- 1 (kl-divergence b c)))
 
 (defn js-sim
   "A relevance measure between two vectors."
   [b c]
-  (- 1 (jensen-shannon-divergence b c)))
+  (- 1 (js-divergence b c)))

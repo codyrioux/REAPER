@@ -70,9 +70,9 @@
     [inferencer (.getInferencer lda-model)]
     (fn
       [sentence]
-      (.getSampledDistribution inferencer 
-                               (first (get-instance-list {1 sentence}))
-                               numiter numiter burnin))))
+      (map identity (.getSampledDistribution inferencer 
+                                             (first (get-instance-list {1 sentence}))
+                                             numiter numiter burnin)))))
 
 (defn corpus->lda
   "Creates an estimated ParallelTopicModel from a REAPER corpus."
