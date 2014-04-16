@@ -33,9 +33,9 @@
   [query]
   (let
     [ug-vec (make-ngram-vectorizer [[query]] 1 50)
-     2g-vec (make-ngram-vectorizer [[query]] 2 50)]
+     bg-vec (make-ngram-vectorizer [[query]] 2 50)]
     (fn [x]
-      (reduce + (concat (ug-vec x) (2g-vec x))))))
+      (reduce + (concat (ug-vec x) (bg-vec x))))))
 
 (def experiment-graph
   "A prismatic graph specifying the experiment computations."
@@ -48,12 +48,12 @@
    :sp (fnk [actions length-lim] (partial sp actions length-lim))
    :query (fnk [path wn-path] (slurp (str path "/query.txt")))
    ;; Score Functions
-   :vectorizer (fnk [corpus] (memo/fifo  (make-unigram-bigram-vectorizer corpus 100 :remove-stopwords true :stem true) :fifo/threshold (count (flatten corpus))))
+   :vectorizer (fnk [corpus] (memo/fifo  (make-unigram-bigram-vectorizer corpus 100) :fifo/threshold (count (flatten corpus))))
    :sim (fnk [corpus] (memo/fifo (make-tfidf-sim corpus 100 :remove-stopwords true :stem true)
                                  :fifo/threshold (* (count (flatten corpus)) (count (flatten corpus)))))
    :csim (fnk [corpus] (memo/fifo  (make-tfidf-corpus-sim corpus 100 :remove-stopwords true :stem true)
                                   :fifo/threshold (count (flatten corpus))))
-   :qsim (fnk [query] (memo/fifo  (make-qsim query)
+   :qsim (fnk [corpus query] (memo/fifo  (make-qsim query)
                                   :fifo/threshold (count (flatten corpus))))
    :diversity (fnk [corpus csim vectorizer query qsim]
                    (rwutil/make-diversity-fn corpus csim vectorizer (quot (count (flatten corpus)) 5) :qsim qsim))

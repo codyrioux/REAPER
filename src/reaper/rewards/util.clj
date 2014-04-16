@@ -22,7 +22,7 @@
 (defn make-corpus-sim-fn
   "Calculates each elemenets similarity
    corpus: A corpus object representing the input set."
-  [vectorize]
+  [vectorize corpus]
   (let
     [sim (make-sim-fn vectorize)
      input (to-chan (flatten corpus))
