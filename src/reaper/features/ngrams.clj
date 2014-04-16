@@ -6,11 +6,13 @@
     [reaper.tools.ngrams :refer [corpus->ngrams ngram-model->top-m-ngrams]]))
 
 (defn make-ngram-vectorizer
-  "TODO: Incomplete"
   [corpus n m & {:keys [remove-stopwords
-                      stem]
-               :or {remove-stopwords false
-                    stem false}}]
+                        stem
+                        binary
+                        ]
+                 :or {remove-stopwords false
+                      stem false
+                      binary false}}]
   (let
     [ngram-model (corpus->ngrams corpus n
                                  :remove-stopwords remove-stopwords
@@ -20,6 +22,6 @@
     (fn [s]
       (let
         [ngrams (corpus->ngrams [[s]] n :remove-stopwords remove-stopwords :stem stem)]
-        (reduce #(assoc %1 (ngram->idx %2) (get ngram-model %2 :x))
+        (reduce #(assoc %1 (ngram->idx %2) (if binary 1 (get ngram-model %2 0.0)))
                 (vec (repeat m 0))
                 (filter #(some #{%} (keys ngram->idx)) (keys ngrams)))))))

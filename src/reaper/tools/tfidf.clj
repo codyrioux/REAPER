@@ -49,7 +49,7 @@
 
 (defn corpus->ngram-tfidf-model
   "Converts the provided corpus into a map of ngram => tf*idf value."
-  [corpus n & {:keys [remove-stopwords
+  [corpus n &  {:keys [remove-stopwords
                     stem]
              :or {remove-stopwords false
                   stem false}}]
@@ -57,7 +57,7 @@
     [corpus (if remove-stopwords (corpus->stop-words corpus) corpus)
      corpus (if stem (corpus->stemmed-corpus corpus) corpus)
      corpus (map (fn [doc] (filter #(not (empty? %)) doc)) corpus)
-     docs (map (fn [doc] (apply concat (map #(partition 2 1 %) (map util/tokenize-lower doc)))) corpus)
+     docs (map (fn [doc] (apply concat (map #(partition n 1 %) (map util/tokenize-lower doc)))) corpus)
      terms (distinct (apply concat docs))
      docs (filter #(not (empty? %)) docs)
      doc-to-max-f (zipmap docs (map #(apply max (map (fn [t] (f t %)) %)) docs))

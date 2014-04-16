@@ -82,3 +82,7 @@
 (defn query->synset-str [path query & {:keys [stem remove-stopwords]
                                        :or {stem false remove-stopwords false}}]
   (clojure.string/join " " (query->synset path query :stem stem :remove-stopwords remove-stopwords)))
+
+(defn expasion-map->pairs
+  [m]
+  (map #(map (fn [x] (vec [(first %) x])) (second %)) m))

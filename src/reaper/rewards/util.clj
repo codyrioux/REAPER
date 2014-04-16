@@ -4,6 +4,7 @@
   (:require [reaper.util :as util]
             [reaper.algorithms.kmeans :as km]
             [incanter.stats :as stats]
+            [clojure.set :refer :all]
             [clojure.core.async :refer [chan to-chan <!!]]
             [clojure.set :refer [intersection]]
             [reaper.features.tfidf :refer [make-tfidf-vectorizer]]))
@@ -79,7 +80,6 @@
                                          (* (- 1 beta) (if qsim (qsim sentence) 0.0))))
                                     (intersection % (set (first s))))))
                   groups)))))
-
 
 (defn- average-score
   [unit-coll score unit]
