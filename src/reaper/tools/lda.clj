@@ -4,7 +4,10 @@
   (:import (cc.mallet.types InstanceList Instance))
   (:import (cc.mallet.pipe Pipe SerialPipes CharSequence2TokenSequence TokenSequence2FeatureSequence))
   (:import (cc.mallet.topics ParallelTopicModel))
-  (:require [reaper.util :as util]))
+  (:require [reaper.util :as util]
+            [reaper.tools.stop-words :refer [corpus->stop-words tokens->stop-words]]
+            [reaper.tools.porter-stemmer :refer [tokens->stemmed-tokens corpus->stemmed-corpus]]
+            ))
 
 (defn- document-to-instance
   "Convert a document ID and a text string to a MALLET instance"
@@ -63,16 +66,25 @@
 
 (defn lda->vectorizer
   [lda-model & {:keys [numiter
-                       burnin]
+                       burnin
+                       stem
+                       remove-stopwords]
                 :or {numiter 500
-                     burnin 200}}]
+                     burnin 200
+                     stem false
+                     remove-stopwords false }}]
   (let
     [inferencer (.getInferencer lda-model)]
     (fn
       [sentence]
+      (let
+        [sentence (util/tokenize-lower sentence)
+         sentence (if remove-stopwords (tokens->stop-words sentence) sentence)
+         sentence (if stem (tokens->stemmed-tokens sentence) sentence)
+         sentence (clojure.string/join " " sentence)]
       (map identity (.getSampledDistribution inferencer 
                                              (first (get-instance-list {1 sentence}))
-                                             numiter numiter burnin)))))
+                                             numiter numiter burnin))))))
 
 (defn corpus->lda
   "Creates an estimated ParallelTopicModel from a REAPER corpus."
@@ -81,7 +93,11 @@
 
 (defn corpus->lda-vectorizer
   "Creates an LDA vectorizer from corpus with T topics."
-  [corpus & {:keys [T] :or {T 100}}]
+  [corpus & {:keys [T stem remove-stopwords] :or {T 100
+                                                  stem false
+                                                  remove-stopwords false}}]
   (let
-    [lda (corpus->lda corpus T)]
-    (lda->vectorizer lda)))
+    [corpus (if remove-stopwords (corpus->stop-words corpus) corpus)
+     corpus (if stem (corpus->stemmed-corpus corpus) corpus)
+     lda (corpus->lda corpus T)]
+    (lda->vectorizer lda :stem stem :remove-stopwords remove-stopwords)))

@@ -2,7 +2,7 @@
   "A set of utility functions for developing reward and scoring
    functions."
   (:require [reaper.util :as util]
-            [reaper.algorithms.kmeans :as km]
+            [kmeans-clj.core :as km]
             [incanter.stats :as stats]
             [clojure.set :refer :all]
             [clojure.core.async :refer [chan to-chan <!!]]
@@ -22,9 +22,10 @@
 (defn make-corpus-sim-fn
   "Calculates each elemenets similarity
    corpus: A corpus object representing the input set."
-  [vectorize corpus]
+  [vectorize corpus & {:keys [sim]
+                       :or {sim stats/cosine-similarity}}]
   (let
-    [sim (make-sim-fn vectorize)
+    [sim (make-sim-fn vectorize :sim sim)
      input (to-chan (flatten corpus))
      output (chan)
      results (util/sink output)

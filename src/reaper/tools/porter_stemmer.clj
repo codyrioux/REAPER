@@ -219,7 +219,7 @@ return [$` $1], otherwise, return [nil nil]"
         step0 step1-a step1-b step1-c
         step2 step3 step4 step5-a step5-b step5-c)))
 
-(defn- stem-sentence [s]  (map stem (map clojure.string/lower-case (tokenizer s))))
+(defn stem-sentence [s] (map stem (map clojure.string/lower-case (tokenizer s))))
 
 (defn corpus->stemmed-corpus
   "Converts a corpus into one with each word stemmed."

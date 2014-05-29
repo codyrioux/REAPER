@@ -12,6 +12,7 @@
                  [cc.mallet/mallet "2.0.7"]
                  [incanter/incanter-core "1.5.0-SNAPSHOT"]
                  [criterium "0.4.3"]
+                 [kmeans-clj "0.1.0-SNAPSHOT"]
                  [com.taoensso/timbre "2.6.1"]
                  [prismatic/plumbing "0.1.1"]
                  [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
